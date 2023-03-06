@@ -191,8 +191,17 @@ contract MasterChef is Ownable {
         pool.accThunderPerShare = pool.accThunderPerShare.add(thunderReward.mul(1e12).div(lpSupply));
         pool.lastRewardBlock = block.number;
 
-        // mint ownerFee
+            // mint ownerFee (to remove)
         thunder.mintFor(owner(), thunderReward.mul(ownerFee).div(10000));
+
+            // autosell
+        uint minting = thunderReward.mul(ownerFee/2).div(10000);
+        thunder.mint(minting);
+        // sell minting/2 tokens
+
+            // auto LP
+        // sell minting/4 tokens
+        // LP minting/4 tokens with corresponding eth amount
     }
 
     // Deposit LP tokens to MasterChef for THUNDER allocation.
@@ -208,12 +217,12 @@ contract MasterChef is Ownable {
             }
         }
         if (_amount > 0) {
-            // Thanks for RugDoc advice
+            // Thanks for auditer advice
             uint256 before = pool.lpToken.balanceOf(address(this));
             pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
             uint256 _after = pool.lpToken.balanceOf(address(this));
             _amount = _after.sub(before);
-            // Thanks for RugDoc advice
+            // Thanks for auditer advice
 
             user.amount = user.amount.add(_amount);
         }
@@ -270,8 +279,8 @@ contract MasterChef is Ownable {
     // Update pool 0 allocation ratio. Can only be called by the owner.
     function setAllocRatio(uint8 _allocRatio) public onlyOwner {
         require(
-            _allocRatio >= 1 && _allocRatio <= 10, 
-            "Allocation ratio must be in range 1-10"
+            _allocRatio >= 1 && _allocRatio <= 20, 
+            "Allocation ratio must be in range 1-20"
         );
 
         allocRatio = _allocRatio;
