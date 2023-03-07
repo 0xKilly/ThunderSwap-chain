@@ -5,6 +5,7 @@ require('dotenv').config()
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   defaultNetwork: "hardhat",
+
   solidity: {
     compilers: [
       {
@@ -18,19 +19,40 @@ module.exports = {
       }
     ]
   },
+
   networks: {
+    hardhat: {
+      forking: {
+        url: process.env.MAINNET,
+        blockNumber: 16600000
+      },
+
+      mining: {
+        auto: true,
+        interval: 10000
+      }
+    },
+
     localhost: {
       url: "http://127.0.0.1:8545/",
     },
+
     goerli: {
       url: process.env.GOERLI,
       accounts: [process.env.DEPLOYER_TEST]
     },
+
+    fuji: {
+      url: process.env.FUJI,
+      accounts: [process.env.DEPLOYER_TEST]
+    },
+
     arbitrum: {
       url: process.env.ARBITRUM,
       accounts: [process.env.DEPLOYER_MAIN]
     }
   },
+
   etherscan: {
     apiKey: process.env.ARBISCAN,
   }
