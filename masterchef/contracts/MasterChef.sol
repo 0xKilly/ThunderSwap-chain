@@ -7,6 +7,29 @@ import './sources/token/SafeERC20.sol';
 import './sources/access/Ownable.sol';
 import "./ThunderToken.sol";
 
+interface IRouter {
+    function addLiquidityETH(
+        address token,
+        uint256 amountTokenDesired,
+        uint256 amountTokenMin,
+        uint256 amountETHMin,
+        address to,
+        uint256 deadline
+    ) external returns (
+            uint256 amountToken,
+            uint256 amountETH,
+            uint256 liquidity
+        );
+
+    function swapExactTokensForETH(
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address[] calldata path,
+        address to,
+        uint256 deadline
+    ) external returns (uint256[] memory amounts);
+}
+
 // import "@nomiclabs/buidler/console.sol";
 
 // MasterChef is the master of Thunder. He can make Thunder and he is a fair guy.
@@ -44,6 +67,9 @@ contract MasterChef is Ownable {
         uint256 lastRewardBlock;  // Last block number that THUNDERs distribution occurs.
         uint256 accThunderPerShare; // Accumulated THUNDERs per share, times 1e12. See below.
     }
+
+    IRouter public router;
+    address public weth;
 
     // The THUNDER TOKEN!
     ThunderToken public thunder;
@@ -191,17 +217,39 @@ contract MasterChef is Ownable {
         pool.accThunderPerShare = pool.accThunderPerShare.add(thunderReward.mul(1e12).div(lpSupply));
         pool.lastRewardBlock = block.number;
 
-            // mint ownerFee (to remove)
-        thunder.mintFor(owner(), thunderReward.mul(ownerFee).div(10000));
-
-            // autosell
-        uint minting = thunderReward.mul(ownerFee/2).div(10000);
+        // Mint fee
+        uint minting = thunderReward.mul(ownerFee).div(10000);
         thunder.mint(minting);
-        // sell minting/2 tokens
 
-            // auto LP
-        // sell minting/4 tokens
-        // LP minting/4 tokens with corresponding eth amount
+        // Calculate path
+        address[] memory path = new address[](2);
+        path[0] = address(thunder);
+        path[0] = address(weth);
+
+        // sell for LP
+        router.swapExactTokensForETH(
+        minting/4,
+        0,
+        path,
+        owner(),
+        block.timestamp + 600);
+
+        // LP for owner
+        router.addLiquidityETH(
+        address(thunder),
+        minting/4,
+        0,
+        0,
+        owner(),
+        block.timestamp + 600);
+
+        // sell for owner
+        router.swapExactTokensForETH(
+        minting/2,
+        0,
+        path,
+        owner(),
+        block.timestamp + 600);
     }
 
     // Deposit LP tokens to MasterChef for THUNDER allocation.
@@ -288,5 +336,13 @@ contract MasterChef is Ownable {
 
     function setThunderPerBlock(uint _value) public onlyOwner {
         thunderPerBlock = _value;
+    }
+
+    function setRouter(address _address) public onlyOwner {
+        router = IRouter(_address);
+    }
+
+    function setWETH(address _address) public onlyOwner {
+        weth = _address;
     }
 }
