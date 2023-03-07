@@ -60,6 +60,6 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN,
+    apiKey: process.env.ARBISCAN,
   }
 }
