@@ -8,6 +8,7 @@ import './libraries/UQ112x112.sol';
 import './interfaces/IERC20.sol';
 import './interfaces/IThunderFactory.sol';
 import './interfaces/IThunderCallee.sol';
+import "hardhat/console.sol";
 
 contract ThunderPair is IThunderPair, ThunderERC20 {
     using SafeMath  for uint;

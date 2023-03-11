@@ -1,5 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("@nomiclabs/hardhat-etherscan");
+require('hardhat-abi-exporter');
 require('dotenv').config()
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -24,7 +25,7 @@ module.exports = {
     hardhat: {
       forking: {
         url: process.env.MAINNET,
-        blockNumber: 16600000
+        blockNumber: 16800000
       },
 
       mining: {
@@ -54,6 +55,15 @@ module.exports = {
   },
 
   etherscan: {
-    apiKey: process.env.ARBISCAN,
+    apiKey: process.env.ETHERSCAN,
+  },
+
+  abiExporter: {
+    path: './abis',
+    runOnCompile: true,
+    clear: true,
+    only: [],
+    spacing: 2,
+    pretty: true,
   }
 }

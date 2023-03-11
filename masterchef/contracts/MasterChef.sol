@@ -6,6 +6,7 @@ import './sources/interfaces/IERC20.sol';
 import './sources/token/SafeERC20.sol';
 import './sources/access/Ownable.sol';
 import "./ThunderToken.sol";
+import "hardhat/console.sol";
 
 interface IRouter {
     function addLiquidityETH(
@@ -15,7 +16,7 @@ interface IRouter {
         uint256 amountETHMin,
         address to,
         uint256 deadline
-    ) external returns (
+    ) external payable returns (
             uint256 amountToken,
             uint256 amountETH,
             uint256 liquidity
@@ -70,6 +71,8 @@ contract MasterChef is Ownable {
 
     IRouter public router;
     address public weth;
+    address public marketing;
+    address public liqProvider;
 
     // The THUNDER TOKEN!
     ThunderToken public thunder;
@@ -224,9 +227,21 @@ contract MasterChef is Ownable {
         // Calculate path
         address[] memory path = new address[](2);
         path[0] = address(thunder);
-        path[0] = address(weth);
+        path[1] = address(weth);
 
-        // sell for LP
+        // Transfer 2.5% for LP
+        thunder.transfer(liqProvider, minting/8);
+
+        // Sell 2.5% for LP
+        thunder.approve(address(router), minting);
+        router.swapExactTokensForETH(
+        minting/8,
+        0,
+        path,
+        liqProvider,
+        block.timestamp + 600);
+
+        // Sell 5% for owner
         router.swapExactTokensForETH(
         minting/4,
         0,
@@ -234,22 +249,16 @@ contract MasterChef is Ownable {
         owner(),
         block.timestamp + 600);
 
-        // LP for owner
-        router.addLiquidityETH(
-        address(thunder),
+        // Sell 5% for marketing
+        router.swapExactTokensForETH(
         minting/4,
         0,
-        0,
-        owner(),
+        path,
+        marketing,
         block.timestamp + 600);
 
-        // sell for owner
-        router.swapExactTokensForETH(
-        minting/2,
-        0,
-        path,
-        owner(),
-        block.timestamp + 600);
+        // Burn 5%
+        thunder.transfer(0x000000000000000000000000000000000000dEaD, minting/4);
     }
 
     // Deposit LP tokens to MasterChef for THUNDER allocation.
@@ -344,5 +353,13 @@ contract MasterChef is Ownable {
 
     function setWETH(address _address) public onlyOwner {
         weth = _address;
+    }
+
+    function setMarketing(address _address) public onlyOwner {
+        marketing = _address;
+    }
+    
+    function setLiqProvider(address _address) public onlyOwner {
+        liqProvider = _address;
     }
 }

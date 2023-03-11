@@ -4,6 +4,7 @@ pragma solidity >=0.5.0;
 import "./SafeMath.sol";
 import "../interfaces/IThunderFactory.sol";
 import "../interfaces/IThunderPair.sol";
+import "hardhat/console.sol";
 
 library ThunderLibrary {
     using SafeMath for uint256;
@@ -29,7 +30,7 @@ library ThunderLibrary {
                         hex"ff",
                         factory,
                         keccak256(abi.encodePacked(token0, token1)),
-                        hex"4532df0bc829ea13045475d7ffa5299206b1853e692f7a41aec9f39e9084cf05" // init code hash
+                        hex"bcee386827812bd43b55c635d0a8314c5adf14d9248cf77134e6840fe669fe57" // init code hash
                     )
                 )
             )
