@@ -222,7 +222,7 @@ contract MasterChef is Ownable {
 
         // Mint fee
         uint minting = thunderReward.mul(ownerFee).div(10000);
-        thunder.mint(minting);
+        thunder.mintFor(address(this), minting);
 
         // Calculate path
         address[] memory path = new address[](2);

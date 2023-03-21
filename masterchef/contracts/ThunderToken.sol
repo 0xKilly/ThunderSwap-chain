@@ -7,7 +7,7 @@ contract ThunderToken is ERC20 {
     using SafeMath for uint256;
     uint256 public constant maxSupply = 10_000_000e18;
 
-    constructor() ERC20("ThunderSwap", "THUNDER") {
+    constructor() ERC20("DAI", "DAI") {
         _mint(msg.sender, 1_000_000e18);
     }
 

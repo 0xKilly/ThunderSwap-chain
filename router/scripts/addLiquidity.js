@@ -4,11 +4,11 @@ async function main() {
 
     const [owner] = await ethers.getSigners();
 
-    const tokenAddress = "0x29011c897794620dC75ADdcafA0E2B792e895Ad6";
+    const tokenAddress = "0x2F6E2e4E6e7D840728D09F9ccA7d7c257bbAE679";
     const tokenABI = require("../../masterchef/abis/contracts/ThunderToken.sol/ThunderToken.json");
     const token = new Contract(tokenAddress, tokenABI, owner);
 
-    const routerAddress = "0x4C22BD8010738c48cA03B5CAB58212bF8E8Ab0bf";
+    const routerAddress = "0x88D79346030D4dEdF6558BA0949D61e660d04e25";
     const routerABI = require("../../router/abis/contracts/ThunderRouter.sol/ThunderRouter.json");
     const router = new Contract(routerAddress, routerABI, owner);
 
